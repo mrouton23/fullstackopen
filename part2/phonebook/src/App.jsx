@@ -1,15 +1,24 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import axios from 'axios'
+import PersonForm from './components/PersonForm'
+import Filter from './components/Filter'
+import Contact from './components/Contact'
+import personsService from './services/persons'
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: 'test', number: '555-555-5555' }, 
-    { name: 'foo', number: '555-555-5556' },
-    { name: 'bar', number: '555-555-5557' }
-  ]) 
+  const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [newFilter, setNewFilter] = useState('')
 
+  useEffect(() => {
+    personsService
+      .getAll()
+      .then(initialPersons => {
+        setPersons(initialPersons)
+      })
+    }, [])
+  
   const addName = (event) => {
     event.preventDefault()
     if (persons.some(e => e.name === newName )) {
@@ -19,10 +28,26 @@ const App = () => {
         name: newName,
         number: newNumber
       }
-      setPersons(persons.concat(personObject))
-      setNewName('')
-      setNewNumber('')
+      
+      personsService
+        .create(personObject)
+        .then(initialPersons => {
+          setPersons(persons.concat(personObject))
+          setNewName('')
+          setNewNumber('')
+        })
     }
+  }
+
+  const removeName = (id) => {
+    const person = persons.find(n => n.id === id)
+    personsService
+      .remove(id).then(
+        setPersons(persons.filter(n => n.id !== id))
+      )
+      .catch(error => {
+        alert(`the person '${id}' was already deleted from the server`)
+      })
   }
 
   const handleNameChange = (event) => {
@@ -37,7 +62,7 @@ const App = () => {
     setNewFilter(event.target.value)
   }
 
-  const personsToShow = String(newFilter.length) === 0
+  const personsToShow = String(newFilter.length) <= 0
     ? persons
     : persons.filter(person => person.name === newFilter)
 
@@ -52,6 +77,7 @@ const App = () => {
         numberValue={newNumber}
         numberChange={handleNumberChange}
       />
+      <button onClick={() => removeName(1)}>delete id 1</button>
       <h2>Numbers</h2>
         <ul>
           {personsToShow.map(person => 
@@ -60,41 +86,6 @@ const App = () => {
         </ul>
     </div>
   )
-}
-
-const Filter = ({newFilter, onChange}) => {
-  return (
-    <div>
-      filter shown with
-      <input value={newFilter} onChange={onChange} />
-    </div>
-  )
-}
-
-const PersonForm = ({onSubmit, nameValue, nameChange, numberValue, numberChange}) => {
-  return (
-    <form onSubmit={onSubmit}>
-      <div> name: 
-        <InputForm value={nameValue} onChange={nameChange}/>
-      </div>
-      <div> number:
-        <InputForm value={numberValue} onChange={numberChange} />
-      </div>
-      <div>
-        <button type="submit">add</button>
-      </div>
-    </form>
-  )
-}
-
-const InputForm = ({value, onChange}) => {
-  return (
-    <input value={value} onChange={onChange} />
-  )
-}
-
-const Contact = ({person}) => {
-  return <li>{person.name}, {person.number}</li>
 }
 
 export default App
