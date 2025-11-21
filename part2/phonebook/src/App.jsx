@@ -39,15 +39,19 @@ const App = () => {
     }
   }
 
-  const removeName = (id) => {
-    const person = persons.find(n => n.id === id)
-    personsService
-      .remove(id).then(
-        setPersons(persons.filter(n => n.id !== id))
-      )
-      .catch(error => {
-        alert(`the person '${id}' was already deleted from the server`)
-      })
+  const removeName = (id, name) => {
+    if(window.confirm(`Delete ${name}?`)) {
+      const person = persons.find(n => n.id === id)
+      personsService
+        .remove(id).then(
+          setPersons(persons.filter(n => n.id !== id))
+        )
+        .catch(error => {
+          alert(`the person '${id}' was already deleted from the server`)
+        })
+    } else {
+      console.log("Not deleting")
+    }
   }
 
   const handleNameChange = (event) => {
@@ -70,6 +74,7 @@ const App = () => {
     <div>
       <h2>Phonebook</h2>
       <Filter newFilter={newFilter} onChange={handleFilterChange}/>
+      <h3>Add a new contact</h3>
       <PersonForm 
         onSubmit={addName} 
         nameValue={newName}
@@ -77,12 +82,15 @@ const App = () => {
         numberValue={newNumber}
         numberChange={handleNumberChange}
       />
-      <button onClick={() => removeName(1)}>delete id 1</button>
-      <h2>Numbers</h2>
+      <h3>Numbers</h3>
         <ul>
-          {personsToShow.map(person => 
-            <Contact key={person.name} person={person} />
-          )}
+          {personsToShow.map((person) => ( 
+            <Contact 
+              key={person.id} 
+              person={person}
+              removeName={() => removeName(person.id, person.name)}
+            />
+          ))}
         </ul>
     </div>
   )
