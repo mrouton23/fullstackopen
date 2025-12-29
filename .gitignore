@@ -1,0 +1,5 @@
+node_modules/
+.DS_Store
+part1/.DS_Store
+part2/.DS_Store
+part3/phonebook-backend

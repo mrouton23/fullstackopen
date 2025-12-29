@@ -1,0 +1,27 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mrouton23/test-fullstack.git"
+  },
+  "keywords": [
+    "demo"
+  ],
+  "author": "routon",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mrouton23/test-fullstack/issues"
+  },
+  "homepage": "https://github.com/mrouton23/test-fullstack#readme",
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
